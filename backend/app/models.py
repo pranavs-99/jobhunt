@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Boolean, DateTime, Float, ForeignKey, Integer,
     Text, UniqueConstraint,
@@ -15,7 +15,7 @@ class Company(Base):
     source: Mapped[str] = mapped_column(Text, nullable=False)  # greenhouse | lever | ashby | adzuna
     board_token: Mapped[str | None] = mapped_column(Text)
     url: Mapped[str | None] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     jobs: Mapped[list["Job"]] = relationship("Job", back_populates="company")
 
@@ -52,7 +52,7 @@ class Resume(Base):
     raw_text: Mapped[str] = mapped_column(Text, nullable=False)
     file_path: Mapped[str | None] = mapped_column(Text)
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     scores: Mapped[list["Score"]] = relationship("Score", back_populates="resume")
     flags: Mapped[list["Flag"]] = relationship("Flag", back_populates="resume")
@@ -88,7 +88,7 @@ class Flag(Base):
     severity: Mapped[str | None] = mapped_column(Text)
     target_text: Mapped[str | None] = mapped_column(Text)
     suggestion: Mapped[str | None] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     job: Mapped["Job"] = relationship("Job", back_populates="flags")
     resume: Mapped["Resume"] = relationship("Resume", back_populates="flags")
@@ -104,6 +104,6 @@ class Intro(Base):
     contact_url: Mapped[str | None] = mapped_column(Text)
     draft: Mapped[str | None] = mapped_column(Text)
     status: Mapped[str] = mapped_column(Text, default="draft")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     job: Mapped["Job"] = relationship("Job", back_populates="intros")

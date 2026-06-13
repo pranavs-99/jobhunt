@@ -3,16 +3,20 @@ import yaml
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import Base, SessionLocal, engine
+from .fetch_service import run_fetch
 from .models import Company
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
 COMPANIES_YAML = Path(__file__).parent.parent.parent / "companies.yaml"
+
+scheduler = AsyncIOScheduler()
 
 
 def seed_companies():
@@ -40,11 +44,22 @@ def seed_companies():
         db.close()
 
 
+async def _scheduled_fetch():
+    db = SessionLocal()
+    try:
+        await run_fetch(db)
+    finally:
+        db.close()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     seed_companies()
+    scheduler.add_job(_scheduled_fetch, "interval", hours=24, id="daily_fetch")
+    scheduler.start()
     yield
+    scheduler.shutdown()
 
 
 app = FastAPI(title="Jobhunt API", lifespan=lifespan)
@@ -60,3 +75,19 @@ app.add_middleware(
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+@app.post("/api/fetch")
+async def trigger_fetch():
+    db = SessionLocal()
+    try:
+        results = await run_fetch(db)
+        totals = {
+            "companies": len(results),
+            "found": sum(r.get("found", 0) for r in results.values()),
+            "new": sum(r.get("new", 0) for r in results.values()),
+            "archived": sum(r.get("archived", 0) for r in results.values()),
+        }
+        return {"status": "ok", "totals": totals, "by_company": results}
+    finally:
+        db.close()
