@@ -1,0 +1,77 @@
+# Seed companies for the multi-board fetcher.
+# Fields:
+#   name        - display name
+#   source      - greenhouse | lever | ashby | adzuna
+#   board_token - slug used by the source API (see JOBHUNT_SPEC.md for API URLs)
+#   url         - optional, company website
+
+companies:
+  # ── Greenhouse ─────────────────────────────────────────────
+  - name: Figma
+    source: greenhouse
+    board_token: figma
+    url: https://www.figma.com
+
+  - name: Discord
+    source: greenhouse
+    board_token: discord
+    url: https://discord.com
+
+  - name: Vercel
+    source: greenhouse
+    board_token: vercel
+    url: https://vercel.com
+
+  - name: Webflow
+    source: greenhouse
+    board_token: webflow
+    url: https://webflow.com
+
+  - name: Stripe
+    source: greenhouse
+    board_token: stripe
+    url: https://stripe.com
+
+  # ── Ashby ──────────────────────────────────────────────────
+  - name: Notion
+    source: ashby
+    board_token: notion
+    url: https://www.notion.so
+
+  - name: Linear
+    source: ashby
+    board_token: Linear
+    url: https://linear.app
+
+  - name: Ramp
+    source: ashby
+    board_token: ramp
+    url: https://ramp.com
+
+  # ── Lever ──────────────────────────────────────────────────
+  - name: Epoch AI
+    source: lever
+    board_token: epoch-ai
+    url: https://epochai.org
+
+  - name: Nominal
+    source: lever
+    board_token: nominal
+    url: https://www.nominal.io
+
+  # ── TODO: add when board tokens are confirmed ───────────────
+  # ANORIA, Vassar Robotics, and Mentra do not appear to have
+  # public Greenhouse/Lever/Ashby boards yet. Uncomment and fill
+  # board_token once confirmed.
+  #
+  # - name: ANORIA
+  #   source: greenhouse        # UPDATE source when confirmed
+  #   board_token: FIXME
+  #
+  # - name: Vassar Robotics
+  #   source: greenhouse        # YC P25 startup; no ATS found
+  #   board_token: FIXME
+  #
+  # - name: Mentra
+  #   source: greenhouse
+  #   board_token: FIXME
